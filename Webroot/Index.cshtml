@@ -1,0 +1,71 @@
+﻿@using System.Web.Caching;
+@{
+    Page.Title = Site.Title;
+    Layout = "~/themes/" + Site.Theme + "/_Layout.cshtml";
+    DateTime lastModified = DateTime.MinValue;
+
+    if (string.IsNullOrEmpty(Site.CurrentSlug))
+    {
+        Page.ShowPaging = true;
+        var posts = Site.GetPosts(Site.PostsPerPage);
+
+        foreach (var post in posts)
+        {
+            @RenderPage("~/themes/" + Site.Theme + "/Post.cshtml", post);
+        }
+
+        if (posts.Any())
+        {
+            lastModified = posts.Max(p => p.LastModified);
+        }
+
+        Response.AddCacheItemDependency("posts");
+        Response.Cache.VaryByParams["page"] = true;
+        Response.Cache.VaryByParams["category"] = true;
+        Response.Cache.VaryByParams["tag"] = true;
+        Response.Cache.VaryByParams["author"] = true;
+    }
+    else
+    {
+        Post post = Site.IsNewPost ? new Post() : Site.CurrentPost;
+
+        if ((Site.IsNewPost || Site.IsEditing) && !User.Identity.IsAuthenticated)
+        {
+            FormsAuthentication.RedirectToLoginPage();
+        }
+
+        if (post == null) { throw new HttpException(404, "Post not found"); }
+
+        Page.Title = post.Title;
+		Page.Description = post.Description;
+        lastModified = post.LastModified;
+
+        Response.AddCacheDependency(new CacheDependency(Server.MapPath("~/files/" + post.FileName)));
+
+        if (Site.IsNewPost || Site.IsEditing)
+        {
+            @RenderPage("~/themes/" + Site.Theme + "/Edit.cshtml", post)
+        }
+        else
+        {
+            @RenderPage("~/themes/" + Site.Theme + "/Post.cshtml", post)
+        }
+        
+    }
+
+    if ( !Request.IsLocal && !User.Identity.IsAuthenticated )
+    {
+        Response.Cache.AppendCacheExtension("max-age=0");
+        Response.Cache.SetValidUntilExpires(true);
+        Response.Cache.SetCacheability(HttpCacheability.ServerAndPrivate);
+        Response.Cache.SetVaryByCustom("authenticated");
+        Response.Cache.VaryByParams["slug"] = true;
+        Response.AddCacheDependency(new CacheDependency(Server.MapPath("~/")));
+        //Response.AddCacheDependency(new CacheDependency(Server.MapPath("~/scripts")));
+        //Response.AddCacheDependency(new CacheDependency(Server.MapPath("~/css")));
+        Response.AddCacheDependency(new CacheDependency(Server.MapPath("~/themes/" + Site.Theme)));
+
+
+        Site.SetConditionalGetHeaders(lastModified.ToLocalTime(), Context);
+    }
+}

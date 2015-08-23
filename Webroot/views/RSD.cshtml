@@ -1,0 +1,15 @@
+﻿@{
+    Response.ContentType = "text/xml";
+    var path = !string.IsNullOrWhiteSpace(Site.BlogPath) ? "/" + Site.BlogPath : "";
+}
+
+<rsd version="1.0">
+    <service>
+        <enginename>RazorPub</enginename>
+        <enginelink>http://razorpub.com/</enginelink>
+        <homepagelink>@Request.Url.Scheme://@Request.Url.Authority@path</homepagelink>
+        <apis>
+            <api name="MetaWeblog" preferred="true" apilink="@Request.Url.Scheme://@Request.Url.Authority@path/metaweblog" blogid="1" />
+        </apis>
+    </service>
+</rsd>

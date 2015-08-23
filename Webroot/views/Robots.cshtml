@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /views/
+
+@{
+    Response.ContentType = "text/plain";
+    var path = !string.IsNullOrWhiteSpace(Site.BlogPath) ? "/" + Site.BlogPath : "";
+}
+
+sitemap: @(Request.Url.Scheme + "://" + Request.Url.Authority)@path/sitemap.xml

@@ -1,0 +1,17 @@
+﻿@{
+    Page.Title = "RazorPub - Create new";
+    Layout = "~/themes/" + Site.Theme + "/_Layout.cshtml";
+    Response.Cache.SetCacheability(HttpCacheability.NoCache);
+    Page.Admin = true;
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <h3>Create new</h3>
+    <p>Enter the file name for the page or post you would like to create. File names that do not have a md extension, will get one added.</p>
+    <form id="newPage" action="~/post.ashx?mode=create" method="post">
+        <input type="text" id="fileName" name="fileName" value="" />
+        <button type="button" onclick="createFile('@Site.HandlerPath');">Save</button>
+        <button type="button" onclick="location.href='@Site.BlogPath/admin/pagelist';">Cancel</button>
+    </form>
+    <br />
+}

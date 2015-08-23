@@ -1,0 +1,176 @@
+﻿@{
+    string next = Site.GetNextPage();
+    string prev = Site.GetPrevPage();
+    bool first = false;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@Page.Title</title>
+    <meta name="description" content="@Site.Description" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="@Site.FingerPrint("/favicon.ico")" type="image/x-icon" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lato:300,400,900">
+    <link rel="stylesheet" href="@Site.FingerPrint("/themes/" + Site.Theme + "/css/fluidbox.css")" />
+    <link rel="stylesheet" href="@Site.FingerPrint("/themes/" + Site.Theme + "/css/site.css")" />
+    <meta name="generator" content="@Site.Engine" />
+    <link type="application/rsd+xml" rel="edituri" title="RSD" href="~/views/robots/rsd" />
+    <link type="application/rss+xml" rel="alternate" title="@Site.Title" href="~/feed/rss" />
+    <link type="application/atom+xml" rel="alternate" title="@Site.Title" href="~/feed/atom/" />
+    @if (!string.IsNullOrEmpty(prev))
+    {
+        <link rel="prev" href="@prev" />
+    }
+    @if (!string.IsNullOrEmpty(next))
+    {
+        <link rel="next" href="@next" />
+    }
+</head>
+<body class="home-template">
+    <div class="sidebar" style="background-image:url(@Site.BlogPath/themes/default/images/background.jpg)">
+        <i class="icon-close close-btn"></i>
+        @if (Page.Admin != null)
+        {
+            <div class="profile-card">
+                @RenderPage("~/views/Admin/Options.cshtml")
+            </div>
+        }
+        else
+        {
+            <div class="profile-card">
+                <a href="~/">
+                    <img class="blog-logo" src="@Site.BlogPath/themes/default/images/userimage.jpg" />
+                </a>
+                <h3>@Site.Title</h3>
+                <div class="blog-info">
+                    <p class="blog-description">
+                        @Site.Description
+                    </p>
+
+                </div>
+                <section class="social-media">
+                    <a class="facebook" href="index.html#">
+                        <i class="icon-facebook"></i>
+                    </a>
+                    <a class="twitter" href="index.html#">
+                        <i class="icon-twitter"></i>
+                    </a>
+                    <a class="google-plus" href="index.html#">
+                        <i class="icon-google-plus"></i>
+                    </a>
+                    <a class="instagram" href="index.html#">
+                        <i class="icon-instagram"></i>
+                    </a>
+                    <a class="stackoverflow" href="index.html#">
+                        <i class="icon-stackoverflow"></i>
+                    </a>
+                    <a class="youtube" href="index.html#">
+                        <i class="icon-youtube"></i>
+                    </a>
+                    <a class="vimeo" href="index.html#">
+                        <i class="icon-vimeo"></i>
+                    </a>
+                    <a class="email" href="index.html#">
+                        <i class="icon-mail"></i>
+                    </a>
+                    <a class="github" href="index.html#">
+                        <i class="icon-github"></i>
+                    </a>
+                    <a class="rss" href="index.html#">
+                        <i class="icon-rss"></i>
+                    </a>
+                </section>
+            </div>
+        }
+
+        <nav class="navigation-menu">
+            <ul>
+                <li>
+                    <a href="~/">Home</a>
+                </li>
+                <li>
+                    <a href="~/page/about">About</a>
+                </li>
+            </ul>
+            @{
+                var isPublished = Site.CurrentPost != null && Site.CurrentPost.Status == PostStatus.Published;
+                var path = !string.IsNullOrWhiteSpace(Site.BlogPath) ? "/" + Site.BlogPath : "";
+            }
+            @if (User.Identity.IsAuthenticated)
+            {
+                <br />
+                <ul>
+                    <li><a href="~/admin/pagelist">Admin</a></li>
+                    @if (!string.IsNullOrWhiteSpace(Site.CurrentSlug))
+                    {
+                        <li><a href="~/admin/edit?f=@Site.CurrentPost.FileName">Edit</a></li>
+                    }
+                    <li>
+                        <form id="adminForm" action="@FormsAuthentication.LoginUrl" method="post">
+                            <input type="hidden" name="signout" value="true" />
+                            <input type="hidden" name="returnUrl" value="@HttpUtility.HtmlEncode(Request.RawUrl)" />
+                            <a href="#" onclick="document.getElementById('adminForm').submit();">Sign out</a>
+                        </form>
+                    </li>
+                </ul>
+            }
+        </nav>
+    </div>
+    <main role="main">
+        <header class="site-header">
+            <i class="icon-menu menu-btn"></i>
+            <div class="mobile-header">
+                <a href="~/">
+                    <h3>@Site.Title</h3>
+                </a>
+            </div>
+        </header>
+
+        <div id="main">
+            @RenderBody()
+
+            @if (Page.ShowPaging != null)
+            {
+                <nav class="pagination" id="pagination" role="pagination">
+                    @if (Site.CurrentPage > 1)
+                    {
+                        <a class="newer-posts" href="@Site.GetPagingUrl(-1)"><i class="icon-arrow-left"></i></a>
+                    }
+
+                    <span class="page-number">Page @Site.CurrentPage</span>
+
+                    @if (Site.GetPosts().Count() > Site.PostsPerPage * Site.CurrentPage)
+                    {
+                        <a class="older-posts" href="@Site.GetPagingUrl(1)"><i class="icon-arrow-right"></i></a>
+                    }
+
+                </nav>
+            }
+        </div>
+        <footer class="site-footer">
+            <a class="subscribe" href="~/feed/rss"><i class="icon-rss"></i></a>
+            <div class="copyright">
+                <section>Copyright <a href="~/">@Site.Title</a> &copy; @DateTime.Now.Year.ToString()  • All rights reserved.</section>
+                <section>
+                    Published with <a href="http://razorpub.com/">@Site.Engine</a>
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <text> / </text> <a href="@FormsAuthentication.LoginUrl?ReturnUrl=@Request.RawUrl">Sign in</a>
+                    }
+                </section>
+            </div>
+        </footer>
+    </main>
+    <script src="~/themes/default/js/jquery-1.11.3.min.js"></script>
+    <script src="~/themes/default/js/jquery.fluidbox.min.js"></script>
+    <script src="~/themes/default/js/jquery.fitvids.js"></script>
+    <script src="~/themes/default/js/theme.js"></script>
+    @if (Page.Admin != null)
+    {
+        <script type="text/javascript" rel="javascript" src="@Site.FingerPrint("/scripts/rp-admin.js")"></script>
+    }
+</body>
+</html>
+

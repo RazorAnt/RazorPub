@@ -1,0 +1,27 @@
+﻿@if (User.Identity.IsAuthenticated)
+{
+    <section id="admin-side">
+        <div class="container">
+            <a href="~/">Home</a>
+            <h3>View Options</h3>
+            <ul>
+                <li><a href="~/admin/pagelist">All Pages/Posts</a></li>
+                <li><a href="~/admin/pagelist?v=pages">Pages Only</a></li>
+                <li><a href="~/admin/pagelist?v=posts">Posts Only</a></li>
+                <li><a href="~/admin/pagelist?v=drafts">Drafts Only</a></li>
+                <li><a href="~/admin/pagelist?v=media">Media</a></li>
+            </ul>
+            <h3>File Options</h3>
+            <ul>
+                <li><a href="~/admin/create">Create new file</a></li>
+                <li>Upload File</li>
+            </ul>
+            <form id="fileUpload" action="~/post.ashx?mode=file" method="post" enctype="multipart/form-data">
+                <input type="file" id="file" name="file" style="width: 100%" /><br/>
+                <button type="button" onclick="uploadFile('@Site.HandlerPath');">Upload</button>
+            </form>
+            <br />
+            <span id="statusMessage"></span>
+        </div>
+    </section>
+}

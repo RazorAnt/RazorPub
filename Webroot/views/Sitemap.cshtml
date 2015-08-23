@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    @foreach (Post post in PostManager.GetAllPosts())
+    {
+        if (post.Status == PostStatus.Published || HttpContext.Current.User.Identity.IsAuthenticated)
+         {
+             <url>
+                 <loc>@post.AbsoluteUrl</loc>
+                 <lastmod>@post.LastModified.ToString("yyyy-MM-ddThh:mmzzz")</lastmod>
+             </url>
+         }
+    }
+</urlset>
+
+@{
+    Response.ContentType = "text/xml";
+}

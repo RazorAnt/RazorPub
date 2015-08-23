@@ -1,0 +1,87 @@
+﻿@if (Site.CurrentPost == null)
+{
+    <article class="post">
+        <section class="post-excerpt">
+            <h1><a href="@Model.Url">@Model.Title</a></h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="@Model.PubDate.ToLocalTime().ToString("yyyy-MM-dd")">@Model.PubDate.ToString("MM.dd.yyyy hh:mm tt")</time>
+                @if (Model.Tags.Count > 0)
+                {
+                    <h5 class="post-tags">
+                        <text> • </text>
+                        @foreach (var tag in Model.Tags)
+                        {
+                            if (tag != Model.Tags[0])
+                            {
+                                <text>, </text>
+                            }
+                            <a href="~/tag/@tag">@tag</a>
+
+                        }
+                    </h5>
+                }
+            </div>
+            @if (!string.IsNullOrEmpty(Model.Image))
+            {
+                <a href="@Model.Url"><img class="fullimage" src="@Model.Image" alt="@Model.Title"></a>
+            }
+
+            @Model.AutoExcerpt()
+            <a class="read-more" href="@Model.Url">Read More</a>
+        </section>
+    </article>
+}
+else
+{
+    <article class="post">
+        <section class="post-content">
+            <h1 class="post-title">@Model.Title</h1>
+            <div class="post-meta">
+                <time class="post-date" datetime="@Model.PubDate.ToLocalTime().ToString("yyyy-MM-dd")">@Model.PubDate.ToString("MM.dd.yyyy hh:mm tt")</time>
+                <text>&nbsp;|&nbsp;</text>
+                <h5 class="post-author">By <a href="#">@Model.Author</a></h5>
+                @if (Model.Tags.Count > 0)
+                {
+                    <text>&nbsp;|&nbsp;</text>
+                    <h5 class="post-tags">
+                        @foreach (var tag in Model.Tags)
+                        {
+                            if (tag != Model.Tags[0])
+                            {
+                                <text> • </text>
+                            }
+                            <a href="~/tag/@tag">@tag</a>
+
+                        }
+                    </h5>
+                }
+            </div>
+            @if (!string.IsNullOrEmpty(Model.Image))
+            {
+                <a href="@Model.Url" title=""><img class="fullimage" src="@Model.Image" alt="" title=""></a>
+            }
+            @Html.Raw(Model.GetHtmlContent())
+        </section>
+        <footer class="post-footer">
+            <section class="share">
+                <h4>Share this post</h4>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=@Model.AbsoluteUrl" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="icon-facebook"></i>
+                </a>
+                <a href="https://twitter.com/share?text=@System.Web.HttpUtility.UrlPathEncode(Model.Title)url=@Model.AbsoluteUrl" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="icon-twitter"></i>
+                </a>
+                <a href="https://plus.google.com/share?url=@Model.AbsoluteUrl" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="icon-google-plus"></i>
+                </a>
+            </section>
+        </footer>
+        @if (Model.Type == PostType.Post)
+        {
+            <div class="comments" style="display: none;">
+                <div class="show-comments">Show Comments</div>
+                <div id="disqus_thread"></div>
+            </div>
+        }
+    </article>
+}

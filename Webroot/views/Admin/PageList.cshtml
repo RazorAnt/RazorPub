@@ -1,0 +1,71 @@
+﻿@{
+    Page.Title = "RazorPub - PageList";
+    Layout = "~/themes/" + Site.Theme + "/_Layout.cshtml";
+    Response.Cache.SetCacheability(HttpCacheability.NoCache);
+    Page.Admin = true;
+    var viewType = Request.QueryString["v"] ?? "";
+}
+@if (User.Identity.IsAuthenticated && viewType == "media")
+{
+    <table class="tabler">
+        <thead>
+            <tr>
+                <td>Action</td>
+                <td>File Name</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var file in PostManager.GetMediaFiles())
+            {
+                <tr>
+                    <td>
+                        <a href="#" onclick="deleteFile('media/@file', '@Site.HandlerPath');">Delete</a><br />
+                    </td>
+                    <td><a href="~/files/media/@file">@file</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (User.Identity.IsAuthenticated)
+{
+    <table class="tabler">
+        <thead>
+            <tr>
+                <td>Action</td>
+                <td>Type</td>
+                <td>Title</td>
+                <td>Date</td>
+                <td>Status</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Post post in PostManager.GetAllPosts())
+            {
+                if (viewType == "" ||
+                   (viewType == "pages" && post.Type == PostType.Page) ||
+                   (viewType == "posts" && post.Type == PostType.Post) ||
+                   (viewType == "drafts" && post.Status == PostStatus.Draft))
+                { 
+                <tr>
+                    <td>
+                        <a href="~/admin/edit?f=@post.FileName">Edit</a><br />
+                        <a href="#" onclick="deleteFile('@post.FileName', '@Site.HandlerPath');">Delete</a><br /> 
+                    </td>
+                    <td>@post.Type.ToString()</td>
+                    <td>
+                        <a href="~/@post.Type.ToString().ToLower()/@post.Slug">@post.Title</a><br />
+                        <a href="~/files/@post.FileName">@post.FileName</a>
+                    </td>
+                    <td>@post.PubDate.ToString("yyyy/MM/dd")</td>
+                    <td>@post.Status.ToString()</td>
+                </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+else
+{
+<h1>Invalid</h1>
+}

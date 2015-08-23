@@ -1,0 +1,23 @@
+﻿@{
+    Page.Title = "RazorPub - PageList";
+    Layout = "~/themes/" + Site.Theme + "/_Layout.cshtml";
+    Response.Cache.SetCacheability(HttpCacheability.NoCache);
+    Page.Admin = true;
+    var fileName = Request.QueryString["f"] ?? "";
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <h3>@fileName</h3>
+    <form id="fileSave" action="~/post.ashx?mode=save" method="post">
+        <input type="hidden" id="fileName" name="fileName" value="@fileName" />
+        <textarea id="lines" name="lines" style="width: 100%; height: 500px;">
+            @foreach (var line in PostManager.GetRawText(fileName))
+            {
+                @line
+            }
+        </textarea>
+        <button type="button" onclick="saveFile('@Site.HandlerPath');">Save</button>
+        <button type="button" onclick="location.href='@Site.BlogPath/admin/pagelist';">Cancel</button>
+    </form>
+    <br />
+}
