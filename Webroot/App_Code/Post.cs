@@ -118,8 +118,11 @@ public class Post
         postContent = Regex.Replace(postContent, @"\[gallery]", (Match m) => string.Format(gallerystart, m.Groups[1].Value));
         postContent = Regex.Replace(postContent, @"\[/gallery]", (Match m) => string.Format(galleryend, m.Groups[1].Value));
 
-
-
+        // Add in PostImage is it exists
+        if (!string.IsNullOrEmpty(Image))
+        {
+            postContent = "<a href=\"" + Image + "\" class=\"lightbox\" rel=\"lightbox\"><img class=\"fullimage\" src=\"" + Image + "\" alt=\"\"></a>\n\n" + postContent;
+        }
 
         string result = CommonMarkConverter.Convert(postContent);
 

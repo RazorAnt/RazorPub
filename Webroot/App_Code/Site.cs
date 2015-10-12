@@ -328,7 +328,12 @@ public static class Site
         var tags = PostManager.GetAllPosts()
             .Where(p => ((p.Status == PostStatus.Published && p.PubDate <= DateTime.UtcNow) || HttpContext.Current.User.Identity.IsAuthenticated))
             .SelectMany(x => x.Tags).ToList().Distinct();
-        return tags.ToList();
+
+        var list = tags.ToList();
+
+        list.Sort();
+
+        return list;
     }
 
     public static void ClearStartPageCache()
